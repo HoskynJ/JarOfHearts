@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#fff4ee" id="themeColor">
+<meta name="description" content="A little jar of hearts for Niamh">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Niamh’s Jar">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="app.css">
+<title>Niamh’s Jar</title>
+</head>
+<body>
+<div id="app" data-screen="jar">
+  <canvas id="ambient" aria-hidden="true"></canvas>
+
+  <!-- ============ JAR ============ -->
+  <section class="screen" id="screen-jar" aria-label="The jar">
+    <header class="top">
+      <div class="topRow">
+        <span class="kicker">A little jar for Niamh</span>
+        <div class="topBtns">
+          <button class="iconBtn" id="btnSound" aria-label="Sound on" aria-pressed="true"></button>
+          <button class="iconBtn" id="btnTheme" aria-label="Switch day and night"></button>
+          <button class="iconBtn" id="btnAbout" aria-label="About the jar">i</button>
+        </div>
+      </div>
+      <h1 id="greeting">Hello, Niamh</h1>
+      <p class="tagline" id="tagline"></p>
+    </header>
+    <div class="pills" id="pills"></div>
+    <div class="scene" id="scene">
+      <canvas id="jarCanvas" role="img" aria-label="A glass jar full of coloured hearts. Tap it, tilt it or shake your phone."></canvas>
+      <button class="motionPill" id="enableMotion" hidden>📳 Tap to switch on shake &amp; tilt</button>
+    </div>
+    <div class="moods" id="moods" role="radiogroup" aria-label="What do you need?"></div>
+    <div class="cta">
+      <button class="btn primary" id="openBtn">Open a heart</button>
+      <div class="progress" id="progress"></div>
+    </div>
+  </section>
+
+  <!-- ============ MEMORIES ============ -->
+  <section class="screen" id="screen-memories" aria-label="Memories" hidden>
+    <div class="pad">
+      <h2 class="title">Our little gallery</h2>
+      <p class="lede">Photos and little videos from your Bear.</p>
+      <div class="grid" id="memGrid"></div>
+      <p class="empty" id="memEmpty" hidden>Nothing here yet. Soon this will fill up with photos and little videos from your Bear. ✨</p>
+    </div>
+  </section>
+
+  <!-- ============ SAVED ============ -->
+  <section class="screen" id="screen-saved" aria-label="Saved hearts" hidden>
+    <div class="pad">
+      <h2 class="title">Hearts you’ve kept</h2>
+      <p class="lede" id="savedCount"></p>
+      <div class="list" id="savedList"></div>
+      <p class="empty" id="savedEmpty" hidden>Tap ♥ on any heart to keep it here, for the days you need it again.</p>
+    </div>
+  </section>
+
+  <!-- ============ BREATHE / HEAVY DAY ============ -->
+  <section class="screen" id="screen-breathe" aria-label="If today is heavy" hidden>
+    <div class="pad">
+      <h2 class="title">If today is heavy</h2>
+      <p class="lede">Nothing to fix right now. Just breathe with the circle for a minute.</p>
+      <div class="breathWrap">
+        <div class="breath" id="breath"><span id="breathText">Ready when you are</span></div>
+      </div>
+      <div class="center"><button class="btn secondary" id="breathBtn">Begin</button></div>
+      <div class="card">
+        <h3>Want a gentle heart?</h3>
+        <button class="btn primary wide" id="gentleBtn">Give me a reassuring one</button>
+      </div>
+      <div class="card">
+        <h3>If it feels like too much</h3>
+        <p>You don’t have to carry it alone. Talking to someone can really help, and these are free and confidential (UK):</p>
+        <a class="help" href="tel:116123"><b>Samaritans</b><span>Call 116 123, any time</span></a>
+        <a class="help" href="sms:85258&body=SHOUT"><b>Shout</b><span>Text SHOUT to 85258</span></a>
+        <a class="help" href="tel:111"><b>NHS 111</b><span>Call 111 and choose the mental health option</span></a>
+        <a class="help danger" href="tel:999"><b>In an emergency</b><span>Call 999</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB BAR ============ -->
+  <nav class="tabbar" aria-label="Sections">
+    <button data-tab="jar" aria-current="page"><svg viewBox="0 0 24 24"><path d="M8 3h8v3H8zM7 6h10v12a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3z"/><path d="M12 17.5l-3-2.8c-1.9-1.8.8-4.4 3-2.3 2.2-2.1 4.9.5 3 2.3z" class="fill"/></svg><span>Jar</span></button>
+    <button data-tab="memories"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="3.4"/><path d="M8 5l1.2-2h5.6L16 5"/></svg><span>Gallery</span><i class="dot" id="memDot" hidden></i></button>
+    <button data-tab="saved"><svg viewBox="0 0 24 24"><path d="M12 20l-7-6.6C2 10.7 5.8 6 9.3 8.8L12 11l2.7-2.2C18.2 6 22 10.7 19 13.4z"/></svg><span>Kept</span></button>
+    <button data-tab="breathe"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg><span>Breathe</span></button>
+  </nav>
+
+  <!-- ============ NOTE OVERLAY ============ -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="noteHeading">
+    <article class="note" id="note">
+      <button class="close" id="noteClose" aria-label="Close">✕</button>
+      <div class="newTag" id="noteNew" hidden>New from your Bear ✨</div>
+      <div class="heading" id="noteHeading"></div>
+      <div class="media" id="noteMedia" hidden></div>
+      <p class="message" id="noteMessage"></p>
+      <div class="rarity" id="noteRarity"></div>
+      <div class="noteActions">
+        <button class="pillBtn" id="noteSave" aria-pressed="false"><span class="h">♡</span> Keep</button>
+        <button class="pillBtn" id="noteAgain">Another heart ♥</button>
+      </div>
+    </article>
+  </div>
+
+  <!-- ============ WELCOME / ABOUT ============ -->
+  <div class="overlay welcome" id="welcome" role="dialog" aria-modal="true" aria-label="Welcome">
+    <div class="welcomeCard">
+      <div class="welcomeHeart">♥</div>
+      <h2 id="welcomeTitle">A little jar for Niamh</h2>
+      <p class="big" id="welcomeTag"></p>
+      <p id="welcomeIntro"></p>
+      <ul class="how">
+        <li><b>Tap</b> a heart, or the glass, to open one</li>
+        <li><b>Tilt</b> your phone, the hearts slide about</li>
+        <li><b>Shake</b> it for a surprise</li>
+        <li><b>Pick a mood</b> and the right hearts glow</li>
+      </ul>
+      <div class="install" id="installCoach" hidden>
+        <b>Make it an app</b>
+        <p>In Safari, tap <svg class="share" viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg> <b>Share</b>, then <b>Add to Home Screen</b>.</p>
+      </div>
+      <button class="btn primary wide" id="welcomeGo">Open the jar</button>
+    </div>
+  </div>
+
+
+  <!-- ============ LOCK ============ -->
+  <div class="overlay welcome" id="lock" role="dialog" aria-modal="true" aria-label="Unlock the jar" style="z-index:85">
+    <div class="welcomeCard">
+      <div class="welcomeHeart">♥</div>
+      <h2>A little jar for Niamh</h2>
+      <p>This one’s just for you. Paste the setup code to open it. You’ll only ever need to do this once.</p>
+      <input class="lockInput" id="lockCode" type="text" placeholder="Setup code" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="go">
+      <div class="lockErr" id="lockErr" role="alert"></div>
+      <button class="btn primary wide" id="lockGo">Open the jar</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+</div>
+<script>
+setTimeout(function(){if(!window.__jar){var g=document.getElementById('greeting'),t=document.getElementById('tagline');if(g)g.textContent='The jar didn’t load';if(t)t.textContent='Some files are probably missing. Check that app.js, jar.js, physics.js, fx.js and app.css are all uploaded next to index.html.'}},4500);
+</script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
